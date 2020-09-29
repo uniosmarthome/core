@@ -720,7 +720,8 @@ habitipy==0.2.0
 hangups==0.4.10
 
 # homeassistant.components.cloud
-hass-nabucasa==0.37.0
+#hass-uniocloud==0.37.0
+-e git://github.com/uniosmarthome/hass-uniocloud.git@master#egg=hass_uniocloud
 
 # homeassistant.components.jewish_calendar
 hdate==0.9.5

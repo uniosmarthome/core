@@ -1,7 +1,7 @@
 """Support for the cloud for text to speech service."""
 
-from hass_nabucasa import Cloud
-from hass_nabucasa.voice import VoiceError
+from hass_uniocloud import Cloud
+from hass_uniocloud.voice import VoiceError
 import voluptuous as vol
 
 from homeassistant.components.tts import CONF_LANG, PLATFORM_SCHEMA, Provider
@@ -39,7 +39,7 @@ async def async_get_engine(hass, config, discovery_info=None):
 
 
 class CloudProvider(Provider):
-    """NabuCasa Cloud speech API provider."""
+    """UnioCloud Cloud speech API provider."""
 
     def __init__(self, cloud: Cloud, language: str, gender: str):
         """Initialize cloud provider."""
@@ -69,7 +69,7 @@ class CloudProvider(Provider):
         return {CONF_GENDER: self._gender}
 
     async def async_get_tts_audio(self, message, language, options=None):
-        """Load TTS from NabuCasa Cloud."""
+        """Load TTS from UnioCloud Cloud."""
         # Process TTS
         try:
             data = await self.cloud.voice.process_tts(

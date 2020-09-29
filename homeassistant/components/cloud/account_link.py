@@ -4,7 +4,7 @@ import logging
 from typing import Any
 
 import aiohttp
-from hass_nabucasa import account_link
+from hass_uniocloud import account_link
 
 from homeassistant.const import MAJOR_VERSION, MINOR_VERSION, PATCH_VERSION
 from homeassistant.core import HomeAssistant, callback

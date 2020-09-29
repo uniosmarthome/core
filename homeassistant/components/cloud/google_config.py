@@ -2,8 +2,8 @@
 import asyncio
 import logging
 
-from hass_nabucasa import cloud_api
-from hass_nabucasa.google_report_state import ErrorResponse
+from hass_uniocloud import cloud_api
+from hass_uniocloud.google_report_state import ErrorResponse
 
 from homeassistant.components.google_assistant.helpers import AbstractConfig
 from homeassistant.const import (

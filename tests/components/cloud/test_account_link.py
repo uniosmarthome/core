@@ -74,7 +74,7 @@ async def test_get_services_cached(hass):
     services = 1
 
     with patch.object(account_link, "CACHE_TIMEOUT", 0), patch(
-        "hass_nabucasa.account_link.async_fetch_available_services",
+        "hass_uniocloud.account_link.async_fetch_available_services",
         side_effect=lambda _: services,
     ) as mock_fetch:
         assert await account_link._get_services(hass) == 1
@@ -101,7 +101,7 @@ async def test_get_services_error(hass):
     hass.data["cloud"] = None
 
     with patch.object(account_link, "CACHE_TIMEOUT", 0), patch(
-        "hass_nabucasa.account_link.async_fetch_available_services",
+        "hass_uniocloud.account_link.async_fetch_available_services",
         side_effect=asyncio.TimeoutError,
     ):
         assert await account_link._get_services(hass) == []
@@ -126,7 +126,7 @@ async def test_implementation(hass, flow_handler):
     )
 
     with patch(
-        "hass_nabucasa.account_link.AuthorizeAccountHelper", return_value=helper
+        "hass_uniocloud.account_link.AuthorizeAccountHelper", return_value=helper
     ):
         result = await hass.config_entries.flow.async_init(
             TEST_DOMAIN, context={"source": config_entries.SOURCE_USER}

@@ -3,9 +3,9 @@ import asyncio
 from ipaddress import ip_network
 
 import aiohttp
-from hass_nabucasa import thingtalk
-from hass_nabucasa.auth import Unauthenticated, UnknownError
-from hass_nabucasa.const import STATE_CONNECTED
+from hass_uniocloud import thingtalk
+from hass_uniocloud.auth import Unauthenticated, UnknownError
+from hass_uniocloud.const import STATE_CONNECTED
 from jose import jwt
 import pytest
 
@@ -28,7 +28,7 @@ SUBSCRIPTION_INFO_URL = "https://api-test.hass.io/subscription_info"
 @pytest.fixture(name="mock_auth")
 def mock_auth_fixture():
     """Mock check token."""
-    with patch("hass_nabucasa.auth.CognitoAuth.async_check_token"):
+    with patch("hass_uniocloud.auth.CognitoAuth.async_check_token"):
         yield
 
 
@@ -71,21 +71,21 @@ def setup_api_fixture(hass, aioclient_mock):
 @pytest.fixture(name="cloud_client")
 def cloud_client_fixture(hass, hass_client):
     """Fixture that can fetch from the cloud client."""
-    with patch("hass_nabucasa.Cloud.write_user_info"):
+    with patch("hass_uniocloud.Cloud.write_user_info"):
         yield hass.loop.run_until_complete(hass_client())
 
 
 @pytest.fixture(name="mock_cognito")
 def mock_cognito_fixture():
     """Mock warrant."""
-    with patch("hass_nabucasa.auth.CognitoAuth._cognito") as mock_cog:
+    with patch("hass_uniocloud.auth.CognitoAuth._cognito") as mock_cog:
         yield mock_cog()
 
 
 async def test_google_actions_sync(mock_cognito, mock_cloud_login, cloud_client):
     """Test syncing Google Actions."""
     with patch(
-        "hass_nabucasa.cloud_api.async_google_actions_request_sync",
+        "hass_uniocloud.cloud_api.async_google_actions_request_sync",
         return_value=Mock(status=200),
     ) as mock_request_sync:
         req = await cloud_client.post("/api/cloud/google_actions/sync")
@@ -96,7 +96,7 @@ async def test_google_actions_sync(mock_cognito, mock_cloud_login, cloud_client)
 async def test_google_actions_sync_fails(mock_cognito, mock_cloud_login, cloud_client):
     """Test syncing Google Actions gone bad."""
     with patch(
-        "hass_nabucasa.cloud_api.async_google_actions_request_sync",
+        "hass_uniocloud.cloud_api.async_google_actions_request_sync",
         return_value=Mock(status=HTTP_INTERNAL_SERVER_ERROR),
     ) as mock_request_sync:
         req = await cloud_client.post("/api/cloud/google_actions/sync")
@@ -130,7 +130,7 @@ async def test_login_view_random_exception(cloud_client):
 
 async def test_login_view_invalid_json(cloud_client):
     """Try logging in with invalid JSON."""
-    with patch("hass_nabucasa.auth.CognitoAuth.async_login") as mock_login:
+    with patch("hass_uniocloud.auth.CognitoAuth.async_login") as mock_login:
         req = await cloud_client.post("/api/cloud/login", data="Not JSON")
     assert req.status == 400
     assert len(mock_login.mock_calls) == 0
@@ -138,7 +138,7 @@ async def test_login_view_invalid_json(cloud_client):
 
 async def test_login_view_invalid_schema(cloud_client):
     """Try logging in with invalid schema."""
-    with patch("hass_nabucasa.auth.CognitoAuth.async_login") as mock_login:
+    with patch("hass_uniocloud.auth.CognitoAuth.async_login") as mock_login:
         req = await cloud_client.post("/api/cloud/login", json={"invalid": "schema"})
     assert req.status == 400
     assert len(mock_login.mock_calls) == 0
@@ -147,7 +147,7 @@ async def test_login_view_invalid_schema(cloud_client):
 async def test_login_view_request_timeout(cloud_client):
     """Test request timeout while trying to log in."""
     with patch(
-        "hass_nabucasa.auth.CognitoAuth.async_login", side_effect=asyncio.TimeoutError
+        "hass_uniocloud.auth.CognitoAuth.async_login", side_effect=asyncio.TimeoutError
     ):
         req = await cloud_client.post(
             "/api/cloud/login", json={"email": "my_username", "password": "my_password"}
@@ -159,7 +159,7 @@ async def test_login_view_request_timeout(cloud_client):
 async def test_login_view_invalid_credentials(cloud_client):
     """Test logging in with invalid credentials."""
     with patch(
-        "hass_nabucasa.auth.CognitoAuth.async_login", side_effect=Unauthenticated
+        "hass_uniocloud.auth.CognitoAuth.async_login", side_effect=Unauthenticated
     ):
         req = await cloud_client.post(
             "/api/cloud/login", json={"email": "my_username", "password": "my_password"}
@@ -170,7 +170,7 @@ async def test_login_view_invalid_credentials(cloud_client):
 
 async def test_login_view_unknown_error(cloud_client):
     """Test unknown error while logging in."""
-    with patch("hass_nabucasa.auth.CognitoAuth.async_login", side_effect=UnknownError):
+    with patch("hass_uniocloud.auth.CognitoAuth.async_login", side_effect=UnknownError):
         req = await cloud_client.post(
             "/api/cloud/login", json={"email": "my_username", "password": "my_password"}
         )
@@ -400,8 +400,8 @@ async def test_websocket_subscription_reconnect(
     client = await hass_ws_client(hass)
 
     with patch(
-        "hass_nabucasa.auth.CognitoAuth.async_renew_access_token"
-    ) as mock_renew, patch("hass_nabucasa.iot.CloudIoT.connect") as mock_connect:
+        "hass_uniocloud.auth.CognitoAuth.async_renew_access_token"
+    ) as mock_renew, patch("hass_uniocloud.iot.CloudIoT.connect") as mock_connect:
         await client.send_json({"id": 5, "type": "cloud/subscription"})
         response = await client.receive_json()
 
@@ -419,8 +419,8 @@ async def test_websocket_subscription_no_reconnect_if_connected(
     client = await hass_ws_client(hass)
 
     with patch(
-        "hass_nabucasa.auth.CognitoAuth.async_renew_access_token"
-    ) as mock_renew, patch("hass_nabucasa.iot.CloudIoT.connect") as mock_connect:
+        "hass_uniocloud.auth.CognitoAuth.async_renew_access_token"
+    ) as mock_renew, patch("hass_uniocloud.iot.CloudIoT.connect") as mock_connect:
         await client.send_json({"id": 5, "type": "cloud/subscription"})
         response = await client.receive_json()
 
@@ -437,8 +437,8 @@ async def test_websocket_subscription_no_reconnect_if_expired(
     client = await hass_ws_client(hass)
 
     with patch(
-        "hass_nabucasa.auth.CognitoAuth.async_renew_access_token"
-    ) as mock_renew, patch("hass_nabucasa.iot.CloudIoT.connect") as mock_connect:
+        "hass_uniocloud.auth.CognitoAuth.async_renew_access_token"
+    ) as mock_renew, patch("hass_uniocloud.iot.CloudIoT.connect") as mock_connect:
         await client.send_json({"id": 5, "type": "cloud/subscription"})
         response = await client.receive_json()
 
@@ -464,7 +464,7 @@ async def test_websocket_subscription_not_logged_in(hass, hass_ws_client):
     """Test querying the status."""
     client = await hass_ws_client(hass)
     with patch(
-        "hass_nabucasa.Cloud.fetch_subscription_info",
+        "hass_uniocloud.Cloud.fetch_subscription_info",
         return_value={"return": "value"},
     ):
         await client.send_json({"id": 5, "type": "cloud/subscription"})
@@ -547,7 +547,7 @@ async def test_enabling_webhook(hass, hass_ws_client, setup_api, mock_cloud_logi
     """Test we call right code to enable webhooks."""
     client = await hass_ws_client(hass)
     with patch(
-        "hass_nabucasa.cloudhooks.Cloudhooks.async_create", return_value={}
+        "hass_uniocloud.cloudhooks.Cloudhooks.async_create", return_value={}
     ) as mock_enable:
         await client.send_json(
             {"id": 5, "type": "cloud/cloudhook/create", "webhook_id": "mock-webhook-id"}
@@ -562,7 +562,7 @@ async def test_enabling_webhook(hass, hass_ws_client, setup_api, mock_cloud_logi
 async def test_disabling_webhook(hass, hass_ws_client, setup_api, mock_cloud_login):
     """Test we call right code to disable webhooks."""
     client = await hass_ws_client(hass)
-    with patch("hass_nabucasa.cloudhooks.Cloudhooks.async_delete") as mock_disable:
+    with patch("hass_uniocloud.cloudhooks.Cloudhooks.async_delete") as mock_disable:
         await client.send_json(
             {"id": 5, "type": "cloud/cloudhook/delete", "webhook_id": "mock-webhook-id"}
         )
@@ -578,7 +578,7 @@ async def test_enabling_remote(hass, hass_ws_client, setup_api, mock_cloud_login
     client = await hass_ws_client(hass)
     cloud = hass.data[DOMAIN]
 
-    with patch("hass_nabucasa.remote.RemoteUI.connect") as mock_connect:
+    with patch("hass_uniocloud.remote.RemoteUI.connect") as mock_connect:
         await client.send_json({"id": 5, "type": "cloud/remote/connect"})
         response = await client.receive_json()
     assert response["success"]
@@ -592,7 +592,7 @@ async def test_disabling_remote(hass, hass_ws_client, setup_api, mock_cloud_logi
     client = await hass_ws_client(hass)
     cloud = hass.data[DOMAIN]
 
-    with patch("hass_nabucasa.remote.RemoteUI.disconnect") as mock_disconnect:
+    with patch("hass_uniocloud.remote.RemoteUI.disconnect") as mock_disconnect:
         await client.send_json({"id": 5, "type": "cloud/remote/disconnect"})
         response = await client.receive_json()
     assert response["success"]
@@ -619,7 +619,7 @@ async def test_enabling_remote_trusted_networks_local4(
     client = await hass_ws_client(hass)
 
     with patch(
-        "hass_nabucasa.remote.RemoteUI.connect", side_effect=AssertionError
+        "hass_uniocloud.remote.RemoteUI.connect", side_effect=AssertionError
     ) as mock_connect:
         await client.send_json({"id": 5, "type": "cloud/remote/connect"})
         response = await client.receive_json()
@@ -652,7 +652,7 @@ async def test_enabling_remote_trusted_networks_local6(
     client = await hass_ws_client(hass)
 
     with patch(
-        "hass_nabucasa.remote.RemoteUI.connect", side_effect=AssertionError
+        "hass_uniocloud.remote.RemoteUI.connect", side_effect=AssertionError
     ) as mock_connect:
         await client.send_json({"id": 5, "type": "cloud/remote/connect"})
         response = await client.receive_json()
@@ -685,7 +685,7 @@ async def test_enabling_remote_trusted_networks_other(
     client = await hass_ws_client(hass)
     cloud = hass.data[DOMAIN]
 
-    with patch("hass_nabucasa.remote.RemoteUI.connect") as mock_connect:
+    with patch("hass_uniocloud.remote.RemoteUI.connect") as mock_connect:
         await client.send_json({"id": 5, "type": "cloud/remote/connect"})
         response = await client.receive_json()
 
@@ -781,7 +781,7 @@ async def test_enabling_remote_trusted_proxies_local4(
     client = await hass_ws_client(hass)
 
     with patch(
-        "hass_nabucasa.remote.RemoteUI.connect", side_effect=AssertionError
+        "hass_uniocloud.remote.RemoteUI.connect", side_effect=AssertionError
     ) as mock_connect:
         await client.send_json({"id": 5, "type": "cloud/remote/connect"})
         response = await client.receive_json()
@@ -805,7 +805,7 @@ async def test_enabling_remote_trusted_proxies_local6(
     client = await hass_ws_client(hass)
 
     with patch(
-        "hass_nabucasa.remote.RemoteUI.connect", side_effect=AssertionError
+        "hass_uniocloud.remote.RemoteUI.connect", side_effect=AssertionError
     ) as mock_connect:
         await client.send_json({"id": 5, "type": "cloud/remote/connect"})
         response = await client.receive_json()

@@ -171,7 +171,7 @@ async def test_with_cloud_sub(hass):
         "homeassistant.components.cloud.async_active_subscription", return_value=True
     ), patch(
         "homeassistant.components.cloud.async_create_cloudhook",
-        return_value="https://hooks.nabu.casa/ABCD",
+        return_value="https://hooks.unio.cloud/ABCD",
     ):
         result = await hass.config_entries.flow.async_init(
             DOMAIN, context={"source": "user"}, data={}
@@ -181,5 +181,5 @@ async def test_with_cloud_sub(hass):
     assert entry.data["cloudhook"]
     assert (
         result["description_placeholders"]["webhook_url"]
-        == "https://hooks.nabu.casa/ABCD"
+        == "https://hooks.unio.cloud/ABCD"
     )

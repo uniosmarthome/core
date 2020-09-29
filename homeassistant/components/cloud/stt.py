@@ -2,8 +2,8 @@
 from typing import List
 
 from aiohttp import StreamReader
-from hass_nabucasa import Cloud
-from hass_nabucasa.voice import VoiceError
+from hass_uniocloud import Cloud
+from hass_uniocloud.voice import VoiceError
 
 from homeassistant.components.stt import Provider, SpeechMetadata, SpeechResult
 from homeassistant.components.stt.const import (
@@ -49,10 +49,10 @@ async def async_get_engine(hass, config, discovery_info=None):
 
 
 class CloudProvider(Provider):
-    """NabuCasa speech API provider."""
+    """UnioCloud speech API provider."""
 
     def __init__(self, cloud: Cloud) -> None:
-        """Home Assistant NabuCasa Speech to text."""
+        """Home Assistant UnioCloud Speech to text."""
         self.cloud = cloud
 
     @property

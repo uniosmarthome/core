@@ -5,7 +5,7 @@ import logging
 
 import aiohttp
 import async_timeout
-from hass_nabucasa import cloud_api
+from hass_uniocloud import cloud_api
 
 from homeassistant.components.alexa import (
     config as alexa_config,

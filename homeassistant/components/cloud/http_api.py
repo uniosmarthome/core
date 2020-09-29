@@ -6,8 +6,8 @@ import logging
 import aiohttp
 import async_timeout
 import attr
-from hass_nabucasa import Cloud, auth, thingtalk
-from hass_nabucasa.const import STATE_DISCONNECTED
+from hass_uniocloud import Cloud, auth, thingtalk
+from hass_uniocloud.const import STATE_DISCONNECTED
 import voluptuous as vol
 
 from homeassistant.components import websocket_api

@@ -582,7 +582,7 @@ async def test_setup_safe_mode_if_no_frontend(
         return_value={
             "homeassistant": {
                 "internal_url": "http://192.168.1.100:8123",
-                "external_url": "https://abcdef.ui.nabu.casa",
+                "external_url": "https://abcdef.ui.unio.cloud",
             },
             "map": {},
             "person": {"invalid": True},
@@ -604,4 +604,4 @@ async def test_setup_safe_mode_if_no_frontend(
     assert hass.config.config_dir == get_test_config_dir()
     assert hass.config.skip_pip
     assert hass.config.internal_url == "http://192.168.1.100:8123"
-    assert hass.config.external_url == "https://abcdef.ui.nabu.casa"
+    assert hass.config.external_url == "https://abcdef.ui.unio.cloud"

@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import Any, Dict
 
 import aiohttp
-from hass_nabucasa.client import CloudClient as Interface
+from hass_uniocloud.client import CloudClient as Interface
 
 from homeassistant.components.alexa import (
     errors as alexa_errors,

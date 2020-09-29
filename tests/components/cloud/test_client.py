@@ -102,7 +102,7 @@ async def test_handler_google_actions(hass):
     data = {"requestId": reqid, "inputs": [{"intent": "action.devices.SYNC"}]}
 
     with patch(
-        "hass_nabucasa.Cloud._decode_claims",
+        "hass_uniocloud.Cloud._decode_claims",
         return_value={"cognito:username": "myUserName"},
     ):
         await cloud.client.get_google_config()
@@ -128,7 +128,7 @@ async def test_handler_google_actions_disabled(hass, mock_cloud_fixture):
     """Test handler Google Actions when user has disabled it."""
     mock_cloud_fixture._prefs[PREF_ENABLE_GOOGLE] = False
 
-    with patch("hass_nabucasa.Cloud.start"):
+    with patch("hass_uniocloud.Cloud.start"):
         assert await async_setup_component(hass, "cloud", {})
 
     reqid = "5711642932632160983"
@@ -143,7 +143,7 @@ async def test_handler_google_actions_disabled(hass, mock_cloud_fixture):
 
 async def test_webhook_msg(hass, caplog):
     """Test webhook msg."""
-    with patch("hass_nabucasa.Cloud.start"):
+    with patch("hass_uniocloud.Cloud.start"):
         setup = await async_setup_component(hass, "cloud", {"cloud": {}})
         assert setup
     cloud = hass.data["cloud"]

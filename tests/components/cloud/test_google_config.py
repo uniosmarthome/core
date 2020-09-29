@@ -51,7 +51,7 @@ async def test_sync_entities(aioclient_mock, hass, cloud_prefs):
     )
 
     with patch(
-        "hass_nabucasa.cloud_api.async_google_actions_request_sync",
+        "hass_uniocloud.cloud_api.async_google_actions_request_sync",
         return_value=Mock(status=HTTP_NOT_FOUND),
     ) as mock_request_sync:
         assert await config.async_sync_entities("user") == HTTP_NOT_FOUND

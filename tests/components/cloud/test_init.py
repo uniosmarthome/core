@@ -15,7 +15,7 @@ from tests.async_mock import patch
 
 async def test_constructor_loads_info_from_config(hass):
     """Test non-dev mode loads info from SERVERS constant."""
-    with patch("hass_nabucasa.Cloud.start"):
+    with patch("hass_uniocloud.Cloud.start"):
         result = await async_setup_component(
             hass,
             "cloud",
@@ -62,13 +62,13 @@ async def test_remote_services(hass, mock_cloud_fixture, hass_read_only_user):
     assert hass.services.has_service(DOMAIN, "remote_connect")
     assert hass.services.has_service(DOMAIN, "remote_disconnect")
 
-    with patch("hass_nabucasa.remote.RemoteUI.connect") as mock_connect:
+    with patch("hass_uniocloud.remote.RemoteUI.connect") as mock_connect:
         await hass.services.async_call(DOMAIN, "remote_connect", blocking=True)
 
     assert mock_connect.called
     assert cloud.client.remote_autostart
 
-    with patch("hass_nabucasa.remote.RemoteUI.disconnect") as mock_disconnect:
+    with patch("hass_uniocloud.remote.RemoteUI.disconnect") as mock_disconnect:
         await hass.services.async_call(DOMAIN, "remote_disconnect", blocking=True)
 
     assert mock_disconnect.called
@@ -77,7 +77,7 @@ async def test_remote_services(hass, mock_cloud_fixture, hass_read_only_user):
     # Test admin access required
     non_admin_context = Context(user_id=hass_read_only_user.id)
 
-    with patch("hass_nabucasa.remote.RemoteUI.connect") as mock_connect, pytest.raises(
+    with patch("hass_uniocloud.remote.RemoteUI.connect") as mock_connect, pytest.raises(
         Unauthorized
     ):
         await hass.services.async_call(
@@ -87,7 +87,7 @@ async def test_remote_services(hass, mock_cloud_fixture, hass_read_only_user):
     assert mock_connect.called is False
 
     with patch(
-        "hass_nabucasa.remote.RemoteUI.disconnect"
+        "hass_uniocloud.remote.RemoteUI.disconnect"
     ) as mock_disconnect, pytest.raises(Unauthorized):
         await hass.services.async_call(
             DOMAIN, "remote_disconnect", blocking=True, context=non_admin_context
@@ -98,7 +98,7 @@ async def test_remote_services(hass, mock_cloud_fixture, hass_read_only_user):
 
 async def test_startup_shutdown_events(hass, mock_cloud_fixture):
     """Test if the cloud will start on startup event."""
-    with patch("hass_nabucasa.Cloud.stop") as mock_stop:
+    with patch("hass_uniocloud.Cloud.stop") as mock_stop:
         hass.bus.async_fire(EVENT_HOMEASSISTANT_STOP)
         await hass.async_block_till_done()
 
@@ -109,7 +109,7 @@ async def test_setup_existing_cloud_user(hass, hass_storage):
     """Test setup with API push default data."""
     user = await hass.auth.async_create_system_user("Cloud test")
     hass_storage[STORAGE_KEY] = {"version": 1, "data": {"cloud_user": user.id}}
-    with patch("hass_nabucasa.Cloud.start"):
+    with patch("hass_uniocloud.Cloud.start"):
         result = await async_setup_component(
             hass,
             "cloud",

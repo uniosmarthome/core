@@ -73,7 +73,7 @@ async def test_use_cloud_url(hass):
 
     with patch(
         "homeassistant.components.cloud.async_remote_ui_url",
-        return_value="https://something.nabu.casa",
+        return_value="https://something.unio.cloud",
     ):
         await hass.services.async_call(
             "cast",
@@ -84,4 +84,4 @@ async def test_use_cloud_url(hass):
 
     assert len(calls) == 1
     controller = calls[0][0]
-    assert controller.hass_url == "https://something.nabu.casa"
+    assert controller.hass_url == "https://something.unio.cloud"

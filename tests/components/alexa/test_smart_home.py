@@ -3779,7 +3779,7 @@ async def test_camera_discovery(hass, mock_stream):
     with patch.object(
         hass.components.cloud,
         "async_remote_ui_url",
-        return_value="https://example.nabu.casa",
+        return_value="https://example.unio.cloud",
     ):
         appliance = await discovery_test(device, hass)
 
@@ -3810,7 +3810,7 @@ async def test_camera_discovery_without_stream(hass):
     with patch.object(
         hass.components.cloud,
         "async_remote_ui_url",
-        return_value="https://example.nabu.casa",
+        return_value="https://example.unio.cloud",
     ):
         appliance = await discovery_test(device, hass)
         # assert Alexa.CameraStreamController is not yielded.

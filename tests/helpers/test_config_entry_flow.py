@@ -292,7 +292,7 @@ async def test_webhook_create_cloudhook(hass, webhook_flow_conf):
     assert result["type"] == data_entry_flow.RESULT_TYPE_FORM
 
     with patch(
-        "hass_nabucasa.cloudhooks.Cloudhooks.async_create",
+        "hass_uniocloud.cloudhooks.Cloudhooks.async_create",
         return_value={"cloudhook_url": "https://example.com"},
     ) as mock_create, patch(
         "homeassistant.components.cloud.async_active_subscription", return_value=True
@@ -308,7 +308,7 @@ async def test_webhook_create_cloudhook(hass, webhook_flow_conf):
     assert len(async_setup_entry.mock_calls) == 1
 
     with patch(
-        "hass_nabucasa.cloudhooks.Cloudhooks.async_delete",
+        "hass_uniocloud.cloudhooks.Cloudhooks.async_delete",
         return_value={"cloudhook_url": "https://example.com"},
     ) as mock_delete:
 

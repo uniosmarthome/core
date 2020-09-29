@@ -11,7 +11,7 @@ async def mock_cloud(hass, config=None):
     """Mock cloud."""
     assert await async_setup_component(hass, cloud.DOMAIN, {"cloud": config or {}})
     cloud_inst = hass.data["cloud"]
-    with patch("hass_nabucasa.Cloud.run_executor", AsyncMock(return_value=None)):
+    with patch("hass_uniocloud.Cloud.run_executor", AsyncMock(return_value=None)):
         await cloud_inst.start()
 
 

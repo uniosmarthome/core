@@ -1,7 +1,7 @@
 """Component to integrate the Home Assistant cloud."""
 import logging
 
-from hass_nabucasa import Cloud
+from hass_uniocloud import Cloud
 import voluptuous as vol
 
 from homeassistant.components.alexa import const as alexa_const
