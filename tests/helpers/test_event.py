@@ -668,7 +668,7 @@ async def test_track_template_error(hass, caplog):
         hass.states.async_set("switch.not_exist", "off")
         await hass.async_block_till_done()
 
-    assert "lunch" not in caplog.text
+    assert "no filter named 'lunch'" not in caplog.text
     assert "TemplateAssertionError" not in caplog.text
 
 
@@ -1458,6 +1458,25 @@ async def test_async_track_template_result_multiple_templates_mixing_domain(hass
             )
         ]
     ]
+
+
+async def test_async_track_template_result_raise_on_template_error(hass):
+    """Test that we raise as soon as we encounter a failed template."""
+
+    with pytest.raises(TemplateError):
+        async_track_template_result(
+            hass,
+            [
+                TrackTemplate(
+                    Template(
+                        "{{ states.switch | function_that_does_not_exist | list }}"
+                    ),
+                    None,
+                ),
+            ],
+            ha.callback(lambda event, updates: None),
+            raise_on_template_error=True,
+        )
 
 
 async def test_track_same_state_simple_no_trigger(hass):

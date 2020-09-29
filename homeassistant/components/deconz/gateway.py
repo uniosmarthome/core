@@ -14,9 +14,11 @@ from homeassistant.helpers.dispatcher import async_dispatcher_send
 from .const import (
     CONF_ALLOW_CLIP_SENSOR,
     CONF_ALLOW_DECONZ_GROUPS,
+    CONF_ALLOW_NEW_DEVICES,
     CONF_MASTER_GATEWAY,
     DEFAULT_ALLOW_CLIP_SENSOR,
     DEFAULT_ALLOW_DECONZ_GROUPS,
+    DEFAULT_ALLOW_NEW_DEVICES,
     DOMAIN,
     LOGGER,
     NEW_GROUP,
@@ -25,6 +27,7 @@ from .const import (
     NEW_SENSOR,
     SUPPORTED_PLATFORMS,
 )
+from .deconz_event import async_setup_events, async_unload_events
 from .errors import AuthenticationRequired, CannotConnect
 
 
@@ -47,6 +50,8 @@ class DeconzGateway:
         self.deconz_ids = {}
         self.events = []
         self.listeners = []
+
+        self.entities = {}
 
         self._current_option_allow_clip_sensor = self.option_allow_clip_sensor
         self._current_option_allow_deconz_groups = self.option_allow_deconz_groups
@@ -73,6 +78,13 @@ class DeconzGateway:
         """Allow loading deCONZ groups from gateway."""
         return self.config_entry.options.get(
             CONF_ALLOW_DECONZ_GROUPS, DEFAULT_ALLOW_DECONZ_GROUPS
+        )
+
+    @property
+    def option_allow_new_devices(self) -> bool:
+        """Allow automatic adding of new devices."""
+        return self.config_entry.options.get(
+            CONF_ALLOW_NEW_DEVICES, DEFAULT_ALLOW_NEW_DEVICES
         )
 
     async def async_update_device_registry(self) -> None:
@@ -111,6 +123,8 @@ class DeconzGateway:
                     self.config_entry, component
                 )
             )
+
+        self.hass.async_create_task(async_setup_events(self))
 
         self.api.start()
 
@@ -199,8 +213,12 @@ class DeconzGateway:
     @callback
     def async_add_device_callback(self, device_type, device) -> None:
         """Handle event of new device creation in deCONZ."""
+        if not self.option_allow_new_devices:
+            return
+
         if not isinstance(device, list):
             device = [device]
+
         async_dispatcher_send(
             self.hass, self.async_signal_new_device(device_type), device
         )
@@ -227,9 +245,7 @@ class DeconzGateway:
             unsub_dispatcher()
         self.listeners = []
 
-        for event in self.events:
-            event.async_will_remove_from_hass()
-        self.events.clear()
+        async_unload_events(self)
 
         self.deconz_ids = {}
         return True

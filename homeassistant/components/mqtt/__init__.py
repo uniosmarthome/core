@@ -60,6 +60,7 @@ from .const import (
     CONF_RETAIN,
     CONF_STATE_TOPIC,
     CONF_WILL_MESSAGE,
+    DATA_MQTT_CONFIG,
     DEFAULT_BIRTH,
     DEFAULT_DISCOVERY,
     DEFAULT_PAYLOAD_AVAILABLE,
@@ -88,7 +89,6 @@ _LOGGER = logging.getLogger(__name__)
 DOMAIN = "mqtt"
 
 DATA_MQTT = "mqtt"
-DATA_MQTT_CONFIG = "mqtt_config"
 
 SERVICE_PUBLISH = "publish"
 SERVICE_DUMP = "dump"
@@ -134,7 +134,7 @@ CONNECTION_FAILED = "connection_failed"
 CONNECTION_FAILED_RECOVERABLE = "connection_failed_recoverable"
 
 DISCOVERY_COOLDOWN = 2
-TIMEOUT_ACK = 1
+TIMEOUT_ACK = 10
 
 PLATFORMS = [
     "alarm_control_panel",
@@ -1229,7 +1229,7 @@ async def cleanup_device_registry(hass, device_id):
     """Remove device registry entry if there are no remaining entities or triggers."""
     # Local import to avoid circular dependencies
     # pylint: disable=import-outside-toplevel
-    from . import device_trigger
+    from . import device_trigger, tag
 
     device_registry = await hass.helpers.device_registry.async_get_registry()
     entity_registry = await hass.helpers.entity_registry.async_get_registry()
@@ -1239,6 +1239,7 @@ async def cleanup_device_registry(hass, device_id):
             entity_registry, device_id
         )
         and not await device_trigger.async_get_triggers(hass, device_id)
+        and not tag.async_has_tags(hass, device_id)
     ):
         device_registry.async_remove_device(device_id)
 
