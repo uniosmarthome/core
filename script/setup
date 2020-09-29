@@ -6,7 +6,7 @@ set -e
 
 cd "$(dirname "$0")/.."
 
-mkdir -p config
+#mkdir -p config
 
 python3 -m venv venv
 source venv/bin/activate
@@ -16,11 +16,11 @@ script/bootstrap
 pre-commit install
 python3 -m pip install -e . --constraint homeassistant/package_constraints.txt
 
-hass --script ensure_config -c config
+#hass --script ensure_config -c config
 
-echo "
-logger:
-  default: info
-  logs:
-    homeassistant.components.cloud: debug
-" >> config/configuration.yaml
+#echo "
+#logger:
+#  default: info
+#  logs:
+#    homeassistant.components.cloud: debug
+#" >> config/configuration.yaml
