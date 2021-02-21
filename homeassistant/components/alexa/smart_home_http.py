@@ -92,6 +92,7 @@ class SmartHomeView(HomeAssistantView):
 
     url = SMART_HOME_HTTP_ENDPOINT
     name = "api:alexa:smart_home"
+    requires_auth = False
 
     def __init__(self, smart_home_config):
         """Initialize."""
@@ -105,13 +106,14 @@ class SmartHomeView(HomeAssistantView):
         the response.
         """
         hass = request.app["hass"]
-        user = request["hass_user"]
+        #user = request["hass_user"]
         message = await request.json()
 
-        _LOGGER.debug("Received Alexa Smart Home request: %s", message)
+        _LOGGER.info("Received Alexa 2 Smart Home request: %s", message)
 
         response = await async_handle_message(
-            hass, self.smart_home_config, message, context=core.Context(user_id=user.id)
+            hass, self.smart_home_config, message
         )
+
         _LOGGER.debug("Sending Alexa Smart Home response: %s", response)
         return b"" if response is None else self.json(response)

@@ -1,5 +1,5 @@
 """Provide info to system health."""
-from hass_nabucasa import Cloud
+from hass_uniocloud import Cloud
 from yarl import URL
 
 from homeassistant.components import system_health
