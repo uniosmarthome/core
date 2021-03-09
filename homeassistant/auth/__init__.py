@@ -462,9 +462,35 @@ class AuthManager:
         except jwt.InvalidTokenError:
             return None
 
-        refresh_token = await self.async_get_refresh_token(
-            cast(str, unverif_claims.get("iss"))
-        )
+        iss = cast(str, unverif_claims.get("iss"))
+
+        if "cognito" in iss:
+            import pycognito
+
+            username = cast(str, unverif_claims.get("username"))
+
+            cloud = self.hass.data["cloud"]
+
+            if not cloud or cloud.username != username:
+                return None
+
+            u = pycognito.Cognito(
+                user_pool_id=cloud.user_pool_id,
+                client_id=cloud.cognito_client_id,
+                user_pool_region=cloud.region,
+            )
+
+            try:
+                u.verify_token(token, "user_token", "access")
+                user = await self.async_get_user(
+                    await cloud.client.prefs.get_cloud_user()
+                )
+                return await self.async_create_refresh_token(user)
+            except:
+                return None
+
+        else:
+            refresh_token = await self.async_get_refresh_token(iss)
 
         if refresh_token is None:
             jwt_key = ""
