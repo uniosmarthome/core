@@ -7,7 +7,7 @@ from setuptools import find_packages, setup
 import homeassistant.const as hass_const
 
 PROJECT_NAME = "Home Assistant"
-PROJECT_PACKAGE_NAME = "homeassistant"
+PROJECT_PACKAGE_NAME = "uniohomeassistant"
 PROJECT_LICENSE = "Apache License 2.0"
 PROJECT_AUTHOR = "The Home Assistant Authors"
 PROJECT_COPYRIGHT = f" 2013-{dt.now().year}, {PROJECT_AUTHOR}"
@@ -17,7 +17,6 @@ PROJECT_EMAIL = "developers@freshminds.com.br"
 PROJECT_GITHUB_USERNAME = "uniosmarthome"
 PROJECT_GITHUB_REPOSITORY = "home-assistant-core"
 
-PYPI_URL = f"https://pypi.python.org/pypi/{PROJECT_PACKAGE_NAME}"
 GITHUB_PATH = f"{PROJECT_GITHUB_USERNAME}/{PROJECT_GITHUB_REPOSITORY}"
 GITHUB_URL = f"https://github.com/{GITHUB_PATH}"
 
