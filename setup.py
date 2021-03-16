@@ -12,10 +12,10 @@ PROJECT_LICENSE = "Apache License 2.0"
 PROJECT_AUTHOR = "The Home Assistant Authors"
 PROJECT_COPYRIGHT = f" 2013-{dt.now().year}, {PROJECT_AUTHOR}"
 PROJECT_URL = "https://www.home-assistant.io/"
-PROJECT_EMAIL = "hello@home-assistant.io"
+PROJECT_EMAIL = "developers@freshminds.com.br"
 
-PROJECT_GITHUB_USERNAME = "home-assistant"
-PROJECT_GITHUB_REPOSITORY = "core"
+PROJECT_GITHUB_USERNAME = "uniosmarthome"
+PROJECT_GITHUB_REPOSITORY = "home-assistant-core"
 
 PYPI_URL = f"https://pypi.python.org/pypi/{PROJECT_PACKAGE_NAME}"
 GITHUB_PATH = f"{PROJECT_GITHUB_USERNAME}/{PROJECT_GITHUB_REPOSITORY}"

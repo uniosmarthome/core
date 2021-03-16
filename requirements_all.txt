@@ -732,8 +732,7 @@ habitipy==0.2.0
 hangups==0.4.11
 
 # homeassistant.components.cloud
-#hass-uniocloud==0.38.0
--e git://github.com/uniosmarthome/hass-uniocloud.git@remote-api#egg=hass_uniocloud
+hass-uniocloud==0.1.0
 
 # homeassistant.components.splunk
 hass_splunk==0.1.1
