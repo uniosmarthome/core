@@ -373,7 +373,7 @@ ha-ffmpeg==3.0.2
 hangups==0.4.11
 
 # homeassistant.components.cloud
-hass-uniocloud==0.1.0
+hass-uniocloud==0.1.2
 
 # homeassistant.components.tasmota
 hatasmota==0.1.4

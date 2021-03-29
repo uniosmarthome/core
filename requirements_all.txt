@@ -732,7 +732,7 @@ habitipy==0.2.0
 hangups==0.4.11
 
 # homeassistant.components.cloud
-hass-uniocloud==0.1.0
+hass-uniocloud==0.1.2
 
 # homeassistant.components.splunk
 hass_splunk==0.1.1
