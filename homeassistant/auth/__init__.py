@@ -468,7 +468,7 @@ class AuthManager:
         if (
             cloud
             and cloud.auth.is_cloud_iss(iss)
-            and cloud.auth.is_valid_cloud_access(token)
+            and await cloud.auth.is_valid_cloud_access(token)
         ):
             user = await self.async_get_user(await cloud.client.prefs.get_cloud_user())
             if user is not None:
