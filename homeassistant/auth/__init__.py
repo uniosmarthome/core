@@ -1,7 +1,8 @@
 """Provide an authentication layer for Home Assistant."""
 import asyncio
+from calendar import timegm
 from collections import OrderedDict
-from datetime import timedelta
+from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional, Tuple, cast
 
 import jwt
@@ -453,6 +454,14 @@ class AuthManager:
             algorithm="HS256",
         ).decode()
 
+    def _validate_expired(self, token: Dict[str, str]) -> bool:
+        now = timegm(datetime.utcnow().utctimetuple())
+        try:
+            exp = int(token["exp"])
+        except ValueError:
+            return True
+        return exp < now
+
     async def async_validate_access_token(
         self, token: str
     ) -> Optional[models.RefreshToken]:
@@ -465,14 +474,24 @@ class AuthManager:
         cloud = self.hass.data["cloud"]
         iss = cast(str, unverif_claims.get("iss"))
 
-        if (
-            cloud
-            and cloud.auth.is_cloud_iss(iss)
-            and await cloud.auth.is_valid_cloud_access(token)
-        ):
+        if cloud and cloud.auth.is_cloud_iss(iss):
+            _client_id = "_clould_token_from_cognito_"
             user = await self.async_get_user(await cloud.client.prefs.get_cloud_user())
             if user is not None:
-                return await self.async_create_refresh_token(user)
+                for __refresh_token in user.refresh_tokens.values():
+                    if __refresh_token.client_name == _client_id:
+                        if (
+                            __refresh_token.client_icon == token
+                            and not self._validate_expired(unverif_claims)
+                        ):
+                            return __refresh_token
+                        else:
+                            await self.async_remove_refresh_token(__refresh_token)
+                            break
+                if await cloud.auth.is_valid_cloud_access(token):
+                    return await self.async_create_refresh_token(
+                        user, client_name=_client_id, client_icon=token
+                    )
             return None
         else:
             refresh_token = await self.async_get_refresh_token(iss)
